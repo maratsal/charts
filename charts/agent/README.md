@@ -231,12 +231,15 @@ parameters:
 | `collectorSettings.collectorPort`        | The port where collector is listening                    | 6443    |
 | `collectorSettings.ssl`                  | The collector accepts SSL                                | `true`  |
 | `collectorSettings.sslVerifyCertificate` | Set to false if you don't want to verify SSL certificate | `true`  |
+| `global.sysdig.region`                   | Set to custom for on-premise installation                | `us1`   |
+| ---------------------------------------- | -------------------------------------------------------- | ------- |
 
 For example:
 
 ```bash
 $ helm install --namespace sysdig-agent sysdig-agent \
     --set sysdig.accessKey=YOUR-KEY-HERE \
+    --set global.sysdig.region="custom" \
     --set collectorSettings.collectorHost=42.32.196.18 \
     --set collectorSettings.collectorPort=6443 \
     --set collectorSettings.sslVerifyCertificate=false \

@@ -108,7 +108,17 @@ spec:
             - name: no_proxy
               value: {{ .Values.proxy.noProxy | default .Values.global.proxy.noProxy }}
           {{- end }}
+          {{- if include "agent.printCA" . }}
+            - name: SSL_CERT_FILE
+              value: /ca-certs/{{ include "agent.sslCaFileName" . }}
+          {{- end }}
           volumeMounts:
+          {{- /* Always requested */}}
+            {{- if include "agent.printCA" . }}
+            - mountPath: /ca-certs
+              name: ca-cert
+            {{- end }}
+
           {{- /* Slim = true, Autopilot = false */}}
           {{- if not (include "agent.gke.autopilot" .) }}
             - mountPath: /etc/modprobe.d
@@ -188,6 +198,10 @@ spec:
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if and (.Values.slim.enabled) (include "agent.printCA" .) }}
+            - name: SSL_CERT_FILE
+              value: /ca-certs/{{ include "agent.sslCaFileName" . }}
+            {{- end }}
           readinessProbe:
             exec:
               command: [ "test", "-e", "/opt/draios/logs/running" ]
@@ -207,6 +221,10 @@ spec:
               name: sysdig-agent-secrets
             - mountPath: /etc/podinfo
               name: podinfo
+            {{- if include "agent.printCA" . }}
+            - mountPath: /ca-certs
+              name: ca-cert
+            {{- end }}
 
           {{- /* Slim = false, Autopilot = false */}}
           {{- if and (not .Values.slim.enabled) (not (include "agent.gke.autopilot" .)) }}
@@ -294,7 +312,6 @@ spec:
           {{- if .Values.extraVolumes.mounts }}
             {{ toYaml .Values.extraVolumes.mounts | nindent 12 }}
           {{- end }}
-
       volumes:
       {{- /* Always requested */}}
         - name: dev-vol
@@ -329,6 +346,23 @@ spec:
                 apiVersion: v1
                 fieldPath: metadata.name
               path: name
+        {{- if include "agent.existingCaSecret" . }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "agent.existingCaSecret" . }}
+        {{- else if include "agent.existingCaConfigMap" . }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "agent.existingCaConfigMap" . }}
+        {{- else if .Values.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ template "agent.fullname" . }}-ca
+        {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
+        {{- end }}
 
       {{- /* Slim = false, Autopilot = false */}}
       {{- if and (not .Values.slim.enabled) (not (include "agent.gke.autopilot" .)) }}
