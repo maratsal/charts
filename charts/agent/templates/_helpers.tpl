@@ -586,21 +586,21 @@ custom CA to get out to download the prebuilt agent probe but require the CA to 
 Template to determine the existing Secret name to be used for Custom CA
 */}}
 {{- define "agent.existingCaSecret" -}}
-		{{- if .Values.ssl.ca.existingCaSecret }}
-			{{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.ssl.ca.existingCaSecret) }}
-			{{- if $secret }}
-				{{- required "A valid secretName must be provided when using .ssl.ca.existingCaSecret" .Values.ssl.ca.existingCaSecret -}}
-			{{- else }}
-					{{ fail "Your .ssl.ca.existingCaSecret does not exist." }}
-			{{- end }}
-		{{- else if .Values.global.ssl.ca.existingCaSecret }}
-			{{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.global.ssl.ca.existingCaSecret) }}
-			{{- if $secret }}
-				{{- required "A valid secretName must be provided when using .global.ssl.ca.existingCaSecret" .Values.global.ssl.ca.existingCaSecret -}}
-			{{- else }}
-					{{ fail "Your .global.ssl.ca.existingCaSecret does not exist." }}
-			{{- end }}
-		{{- end }}
+    {{- if .Values.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.ssl.ca.existingCaSecret) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using .ssl.ca.existingCaSecret" .Values.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your .ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- else if .Values.global.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.global.ssl.ca.existingCaSecret) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using .global.ssl.ca.existingCaSecret" .Values.global.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your .global.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- end }}
 {{- end -}}
 
 {{/*
@@ -620,21 +620,21 @@ This is used when we specify the agent ca_certificate as well as the SSL_CERT_FI
 Template to determine the existing ConfigMap name to be used for Custom CA
 */}}
 {{- define "agent.existingCaConfigMap" -}}
-		{{- if .Values.ssl.ca.existingCaConfigMap }}
-			{{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.ssl.ca.existingCaConfigMap) }}
-			{{- if $secret }}
-				{{- required "A valid configMap name must be provided when using .ssl.ca.existingCaConfigMap" .Values.ssl.ca.existingCaConfigMap -}}
-			{{- else }}
-					{{ fail "Your .ssl.ca.existingCaConfigMap does not exist." }}
-			{{- end }}
-		{{- else if .Values.global.ssl.ca.existingCaConfigMap }}
-			{{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.global.ssl.ca.existingCaConfigMap) }}
-			{{- if $secret }}
-				{{- required "A valid configMap name must be provided when using .global.ssl.ca.existingCaConfigMap" .Values.global.ssl.ca.existingCaConfigMap -}}
-			{{- else }}
-					{{ fail "Your .global.ssl.ca.existingCaConfigMap does not exist." }}
-			{{- end }}
-		{{- end }}
+    {{- if .Values.ssl.ca.existingCaConfigMap }}
+      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.ssl.ca.existingCaConfigMap) }}
+      {{- if $secret }}
+        {{- required "A valid configMap name must be provided when using .ssl.ca.existingCaConfigMap" .Values.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your .ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- else if .Values.global.ssl.ca.existingCaConfigMap }}
+      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.global.ssl.ca.existingCaConfigMap) }}
+      {{- if $secret }}
+        {{- required "A valid configMap name must be provided when using .global.ssl.ca.existingCaConfigMap" .Values.global.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your .global.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- end }}
 {{- end -}}
 
 {{/*
