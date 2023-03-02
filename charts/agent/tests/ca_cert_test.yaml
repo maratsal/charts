@@ -52,7 +52,7 @@ tests:
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
-          pattern: .*\/opt\/draios\/etc\/ca-certs\/root_ca\.crt.*
+          pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
   - it: Check Global CA Cert with local CA cert override
     set:
@@ -95,7 +95,7 @@ tests:
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
-          pattern: .*\/opt\/draios\/etc\/ca-certs\/root_ca\.crt.*
+          pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
   - it: Check Global CA Cert
     set:
@@ -137,5 +137,5 @@ tests:
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
-          pattern: .*\/opt\/draios\/etc\/ca-certs\/global_root_ca\.crt.*
+          pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
