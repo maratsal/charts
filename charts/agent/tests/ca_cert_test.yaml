@@ -31,7 +31,7 @@ tests:
           fileName: "root_ca.crt"
     asserts:
       - contains:
-          path: spec.template.spec.initContainers[*].env
+          path: spec.template.spec.initContainers[0].env
           content:
             name: SSL_CERT_FILE
             value: "/ca-certs/root_ca.crt"
@@ -44,7 +44,7 @@ tests:
               secretName: RELEASE-NAME-agent-ca
         template: daemonset.yaml
       - contains:
-          path: spec.template.spec.initContainers[*].volumeMounts
+          path: spec.template.spec.initContainers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /ca-certs
@@ -70,7 +70,7 @@ tests:
           fileName: "root_ca.crt"
     asserts:
       - contains:
-          path: spec.template.spec.initContainers[*].env
+          path: spec.template.spec.initContainers[0].env
           content:
             name: SSL_CERT_FILE
             value: "/ca-certs/root_ca.crt"
@@ -83,7 +83,7 @@ tests:
               secretName: RELEASE-NAME-agent-ca
         template: daemonset.yaml
       - contains:
-          path: spec.template.spec.initContainers[*].volumeMounts
+          path: spec.template.spec.initContainers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /ca-certs
