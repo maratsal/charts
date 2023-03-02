@@ -110,7 +110,7 @@ spec:
           {{- end }}
           {{- if include "agent.printCA" . }}
             - name: SSL_CERT_FILE
-              value: /ca-certs/{{ include "agent.sslCaFileName" . }}
+              value: /opt/draios/etc/ca-certs/{{ include "agent.sslCaFileName" . }}
           {{- end }}
           volumeMounts:
           {{- /* Always requested */}}
@@ -200,7 +200,7 @@ spec:
             {{- end }}
             {{- if and (.Values.slim.enabled) (include "agent.printCA" .) }}
             - name: SSL_CERT_FILE
-              value: /ca-certs/{{ include "agent.sslCaFileName" . }}
+              value: /opt/draios/etc/ca-certs/{{ include "agent.sslCaFileName" . }}
             {{- end }}
           readinessProbe:
             exec:
