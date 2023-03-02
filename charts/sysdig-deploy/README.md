@@ -182,20 +182,26 @@ The following table lists the configurable parameters of the sysdig-deploy chart
 
 | Parameter                               | Description                                                                                                             | Default   |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------- |
+| `global.agentConfigmapName`             | Sets a configmap name that is used to mount the agent configmap to fetch the cluster name and agent tags                | `"sysdig-agent"`      |
 | `global.clusterConfig.name`             | Identifier for this cluster                                                                                             | `""`      |
-| `global.sysdig.accessKey`               | Sysdig Agent Access Key                                                                                                 | `""`      |
-| `global.sysdig.accessKeySecret`         | The name of a Kubernetes secret containing an 'access-key' entry                                                        | `""`      |
-| `global.sysdig.secureAPIToken`          | API Token to access Sysdig Secure                                                                                       | `""`      |
-| `global.sysdig.secureAPITokenSecret`    | The name of a Kubernetes secret containing API Token to access Sysdig Secure                                            | `""`      |
-| `global.sysdig.region`                  | The SaaS region for these agents. Possible values: `"us1"`, `"us2"`, `"us3"`, `"us4"`, `"eu1"`, `"au1"`, and `"custom"`. See [Regions and IP Ranges](https://docs.sysdig.com/en/docs/administration/saas-regions-and-ip-ranges/) for more information  | `"us1"`   |
-| `global.sysdig.tags`                    | Sets the global tags which can override agent tags                                                                      | `{}`      |
+| `global.gke.autopilot`                  | If true, overrides the configuration to values for GKE Autopilot clusters                                               | `false`   |
 | `global.imageRegistry`                  | Container image registry                                                                                                | ``        |
+| `global.kspm.deploy`                    | Enables Sysdig KSPM node analyzer & KSPM collector                                                                      | `false`   |
 | `global.proxy.httpProxy`                | Sets `http_proxy` on the Agent container                                                                                | `""`      |
 | `global.proxy.httpsProxy`               | Sets `https_proxy` on the Agent container                                                                               | `""`      |
 | `global.proxy.noProxy`                  | Sets `no_proxy` on the Agent container                                                                                  | `""`      |
-| `global.kspm.deploy`                    | Enables Sysdig KSPM node analyzer & KSPM collector                                                                      | `false`   |
-| `global.agentConfigmapName`             | Sets a configmap name that is used to mount the agent configmap to fetch the cluster name and agent tags                | `"sysdig-agent"`      |
-| `global.gke.autopilot`                  | If true, overrides the configuration to values for GKE Autopilot clusters                                               | `false`   |
+| `global.sysdig.accessKey`               | Sysdig Agent Access Key                                                                                                 | `""`      |
+| `global.sysdig.accessKeySecret`         | The name of a Kubernetes secret containing an 'access-key' entry                                                        | `""`      |
+| `global.sysdig.region`                  | The SaaS region for these agents. Possible values: `"us1"`, `"us2"`, `"us3"`, `"us4"`, `"eu1"`, `"au1"`, and `"custom"`. See [Regions and IP Ranges](https://docs.sysdig.com/en/docs/administration/saas-regions-and-ip-ranges/) for more information  | `"us1"`   |
+| `global.sysdig.secureAPIToken`          | API Token to access Sysdig Secure                                                                                       | `""`      |
+| `global.sysdig.secureAPITokenSecret`    | The name of a Kubernetes secret containing API Token to access Sysdig Secure                                            | `""`      |
+| `global.sysdig.tags`                    | Sets the global tags which can override agent tags                                                                      | `{}`      |
+| `global.ssl.ca.cert`                    | SSL CA Bundle/Certificate in x509 PEM format                                                                            | ` `       |
+| `global.ssl.ca.fileName`                | SSL CA Bundle/Certificate Filename to use inside the created Secret                                                     | ` `       |
+| `global.ssl.ca.existingCaSecret`        | Existing Secret containing the SSL CA Bundle/Certificate                                                                | ` `       |
+| `global.ssl.ca.existingCaSecretFileName`| Filename of the existing Secret SSL CA Bundle/Certificate (eg; ca_bundle.crt)                                           | ` `       |
+| `global.ssl.ca.existingCaConfigMap`     | Existing ConfigMap containing the SSL CA Bundle/Certificate                                                             | ` `       |
+| `global.ssl.ca.existingCaConfigMapFileName` | Filename of the existing ConfigMap SSL CA Bundle/Certificate (eg; ca_bundle.crt)                                    | ` `       |
 | `admissionController`                   | Config specific to the [Sysdig AdmissionController](#admissioncontroller)                                               | `{}`      |
 | `admissionController.enabled`           | Enable the admission controller component in this chart                                                                 | `false`   |
 | `agent`                                 | Config specific to the [Sysdig Agent](#agent)                                                                           | `{}`      |
