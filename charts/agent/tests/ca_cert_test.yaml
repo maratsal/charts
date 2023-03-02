@@ -137,5 +137,5 @@ tests:
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
-          pattern: .*\/ca-certs\/root_ca\.crt.*
+          pattern: .*\/ca-certs\/global_root_ca\.crt.*
         template: configmap.yaml
