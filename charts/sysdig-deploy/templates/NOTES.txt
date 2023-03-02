@@ -15,7 +15,7 @@ Usage of global tags will override any local tags you might be using.
 {{- if and (.Values.global.ssl.ca.cert) (eq .Values.global.sysdig.region "custom") }}
 
 We have appended the Sysdig Public CA to the CA bundle that you have provided due to global.sysdig.region="custom" being set.
-This is to handle edge cases for on-premise installations that might need a Custom CA to verify the Collector and still download 
+This is to handle edge cases for on-premise installations that might need a Custom CA to verify the Collector and still download
 the pre-compiled probe from https://download.sysdig.com.
 
 {{- end }}
