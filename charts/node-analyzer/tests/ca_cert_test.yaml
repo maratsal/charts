@@ -5,6 +5,7 @@ templates:
 tests:
   - it: Checking nodeAnalyzer CA Cert Secret
     set:
+      documentIndex: 0
       nodeAnalyzer.benchmarkRunner.deploy: true
       nodeAnalyzer.imageAnalyzer.deploy: true
       nodeAnalyzer.hostAnalyzer.deploy: true
@@ -25,6 +26,7 @@ tests:
         template: secrets.yaml
   - it: Check Local CA Cert
     set:
+      documentIndex: 0
       nodeAnalyzer.benchmarkRunner.deploy: true
       nodeAnalyzer.imageAnalyzer.deploy: true
       nodeAnalyzer.hostAnalyzer.deploy: true
@@ -61,6 +63,7 @@ tests:
         template: daemonset-node-analyzer.yaml
   - it: Check Global CA Cert with local CA cert override
     set:
+      documentIndex: 0
       nodeAnalyzer.benchmarkRunner.deploy: true
       nodeAnalyzer.imageAnalyzer.deploy: true
       nodeAnalyzer.hostAnalyzer.deploy: true
@@ -105,6 +108,7 @@ tests:
         template: daemonset-node-analyzer.yaml
   - it: Check Global CA Cert
     set:
+      documentIndex: 0
       nodeAnalyzer.benchmarkRunner.deploy: true
       nodeAnalyzer.imageAnalyzer.deploy: true
       nodeAnalyzer.hostAnalyzer.deploy: true
@@ -132,7 +136,7 @@ tests:
           content:
             name: ca-cert
             secret:
-              secretName: release-name-node-analyzer-ca
+              secretName: RELEASE-NAME-global-ca
         template: daemonset-node-analyzer.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
