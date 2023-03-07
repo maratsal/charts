@@ -157,3 +157,30 @@ spec:
                 key: agent_port
                 name: {{ template "kspmCollector.fullname" . }}
                 optional: true
+          {{- if include "kspmCollector.printCA" . }}
+          - name: SSL_CERT_FILE
+            value: /ca-certs/{{ include "kspmCollector.sslCaFileName" . }}
+          {{- end }}
+        volumeMounts:
+          {{- if include "kspmCollector.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
+      volumes:
+        {{- if include "kspmCollector.existingCaSecret" . }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "kspmCollector.existingCaSecret" . }}
+        {{- else if include "kspmCollector.existingCaConfigMap" . }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "kspmCollector.existingCaConfigMap" . }}
+        {{- else if .Values.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ template "kspmCollector.fullname" . }}-ca
+        {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
+        {{- end }}

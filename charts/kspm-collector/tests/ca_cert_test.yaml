@@ -1,16 +1,11 @@
-suite: Test node-analyzer CA cert
+suite: Test kspm-collector CA cert
 templates:
-  - secrets.yaml
-  - daemonset-node-analyzer.yaml
+  - secret.yaml
+  - deployment.yaml
 tests:
-  - it: Checking node-analyzer CA Cert Secret
+  - it: Checking kspm-collector CA Cert Secret
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
       sysdig:
         accessKey: AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE
       ssl:
@@ -23,15 +18,10 @@ tests:
     asserts:
       - isKind:
           of: Secret
-        template: secrets.yaml
+        template: secret.yaml
   - it: Check Local CA Cert
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
       sysdig:
         accessKey: AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE
       ssl:
@@ -47,28 +37,23 @@ tests:
           content:
             name: SSL_CERT_FILE
             value: "/ca-certs/root_ca.crt"
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.volumes
           content:
             name: ca-cert
             secret:
-              secretName: release-name-node-analyzer-ca
-        template: daemonset-node-analyzer.yaml
+              secretName: release-name-kspm-collector-ca
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /ca-certs
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
   - it: Check Global CA Cert with local CA cert override
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
       global:
         ssl:
           ca:
@@ -92,28 +77,23 @@ tests:
           content:
             name: SSL_CERT_FILE
             value: "/ca-certs/root_ca.crt"
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.volumes
           content:
             name: ca-cert
             secret:
-              secretName: release-name-node-analyzer-ca
-        template: daemonset-node-analyzer.yaml
+              secretName: release-name-kspm-collector-ca
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /ca-certs
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
   - it: Check Global CA Cert
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
       global:
         ssl:
           ca:
@@ -130,17 +110,17 @@ tests:
           content:
             name: SSL_CERT_FILE
             value: "/ca-certs/global_root_ca.crt"
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.volumes
           content:
             name: ca-cert
             secret:
               secretName: RELEASE-NAME-global-ca
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /ca-certs
-        template: daemonset-node-analyzer.yaml
+        template: deployment.yaml

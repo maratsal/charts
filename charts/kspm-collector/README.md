@@ -29,6 +29,12 @@ The following table lists the configurable parameters of the Sysdig KSPM Collect
 | `global.proxy.noProxy`                    | Sets `NO_PROXY` on the KSPM Collector containers                                        | `""`                                                        |
 | `global.sslVerifyCertificate`             | Sets `NATS_INSECURE` env variable on the KSPM Collector Containers                      |                                                             |
 | `global.kspm.deploy`                      | Enables Sysdig KSPM node analyzer & KSPM collector                                      | `true`                                                      |
+| `global.ssl.ca.cert`                      | SSL CA Bundle/Certificate in x509 PEM format                                            | ` `                                                         |
+| `global.ssl.ca.fileName`                  | SSL CA Bundle/Certificate Filename to use inside the created Secret                     | ` `                                                         |
+| `global.ssl.ca.existingCaSecret`           | Existing Secret containing the SSL CA Bundle/Certificate                               | ` `                                                         |
+| `global.ssl.ca.existingCaSecretFileName`  | Filename of the existing Secret SSL CA Bundle/Certificate (eg; ca_bundle.crt)           | ` `                                                         |
+| `global.ssl.ca.existingCaConfigMap`        | Existing ConfigMap containing the SSL CA Bundle/Certificate                            | ` `                                                         |
+| `global.ssl.ca.existingCaConfigMapFileName` | Filename of the existing ConfigMap SSL CA Bundle/Certificate (eg; ca_bundle.crt)      | ` `                                                         |
 | `sysdig.accessKey`                        | Your Sysdig Access Key                                                                  | ` ` Either accessKey or existingAccessKeySecret is required |
 | `sysdig.existingAccessKeySecret`          | Alternatively, specify the name of a Kubernetes secret containing an 'access-key' entry | ` ` Either accessKey or existingAccessKeySecret is required |
 | `rbac.create`                             | If true, create & use RBAC resources                                                    | `true`                                                      |
