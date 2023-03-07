@@ -10,6 +10,23 @@ global:
   gke:
     # true here enables the deployment on gke autopilot clusters
     autopilot: false
+  ssl:
+    ca:
+      # For outbound connections (secure backend, proxy,...)
+      # A PEM-encoded x509 certificate authority.
+      cert: ""
+
+      # Filename that is used when creating the secret.  Required if cert is provided.
+      fileName: ""
+
+      # Provide the name of an existing Secret that contains the CA required
+      existingCaSecret: ""
+      # Provide the filename that is defined inside the existing Secret
+      existingCaSecretFileName: ""
+      # Provide the name of an existing ConfigMap that contains the CA required
+      existingCaConfigMap: ""
+      # Provide the filename that is defined inside the existing ConfigMap
+      existingCaConfigMapFileName: ""
 
 image:
   # This is a hack to support RELATED_IMAGE_<identifier> feature in Helm based
@@ -386,6 +403,33 @@ nodeAnalyzer:
         periodSeconds: 3
 
     env: {}
+
+ssl:
+  ca:
+    # For outbound connections (secure backend, proxy,...)
+    # A PEM-encoded x509 certificate authority.
+    cert: ""
+
+    # Example of a certificate
+    # cert: |
+    #   -----BEGIN CERTIFICATE-----
+    #   MIIDEzCCAfugAwIBAgIQKiv9U+KxPJzu1adXwC06RzANBgkqhkiG9w0BAQsFADAU
+    #   MRIwEAYDVQQDEwloYXJib3ItY2EwHhcNMjIwMjIzMDY1NjExWhcNMjMwMjIzMDY1
+    #   NjExWjAUMRIwEAYDVQQDEwloYXJib3ItY2EwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+    #   MMNlTAQ9fvdNOTzZntye0PQYR5SR13E=
+    #   -----END CERTIFICATE-----
+
+    # Filename that is used when creating the secret.  Required if cert is provided.
+    fileName: ""
+
+    # Provide the name of an existing Secret that contains the CA required
+    existingCaSecret: ""
+    # Provide the filename that is defined inside the existing Secret
+    existingCaSecretFileName: ""
+    # Provide the name of an existing ConfigMap that contains the CA required
+    existingCaConfigMap: ""
+    # Provide the filename that is defined inside the existing ConfigMap
+    existingCaConfigMapFileName: ""
 
 tests:
   timeout: 300s

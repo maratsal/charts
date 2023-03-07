@@ -54,12 +54,8 @@ We append the Sysdig CA as there are edge cases for on-premise customers that mi
 custom CA to get out to download the prebuilt agent probe but require the CA to verify the backend.
 */}}
 {{- define "sysdig-deploy.printCA" -}}
-    {{- if and (eq .Values.global.sysdig.region "custom") (.Values.global.ssl.ca.cert) }}
+    {{- if .Values.global.ssl.ca.cert }}
       {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
-    {{- else if and (eq .Values.global.sysdig.region "custom") (.Values.ssl.ca.cert) }}
-      {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
-    {{- else if .Values.global.ssl.ca.cert }}
-      {{- printf "%s" .Values.global.ssl.ca.cert -}}
     {{- else }}
       {{- default "" -}}
     {{- end }}

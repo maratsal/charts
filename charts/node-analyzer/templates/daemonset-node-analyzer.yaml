@@ -34,7 +34,7 @@ spec:
         {{- if include "nodeAnalyzer.deployBenchmarkRunner" . }}
         - name: sysdig-agent-config
           configMap:
-            name: {{ include "agent.configmapName" . }}
+            name: {{ include "nodeAnalyzer.configmapName" . }}
             optional: true
         {{- end }}
         # Needed for cri-o image inspection.
@@ -89,6 +89,23 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if include "nodeAnalyzer.existingCaSecret" . }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "nodeAnalyzer.existingCaSecret" . }}
+        {{- else if include "nodeAnalyzer.existingCaConfigMap" . }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "nodeAnalyzer.existingCaConfigMap" . }}
+        {{- else if .Values.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ template "nodeAnalyzer.fullname" . }}-ca
+        {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
+        {{- end }}
         {{- with .Values.nodeAnalyzer.imageAnalyzer.extraVolumes.volumes }}
 {{ toYaml . | indent 8 }}
         {{- end }}
@@ -216,6 +233,10 @@ spec:
                 name: {{ .Release.Name }}-kspm-analyzer
                 key: agent_port
                 optional: true
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - name: SSL_CERT_FILE
+            value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+          {{- end }}
           {{- range $key, $value := .Values.nodeAnalyzer.kspmAnalyzer.env }}
           - name: "{{ $key }}"
             value: "{{ $value }}"
@@ -226,6 +247,10 @@ spec:
             readOnly: true
           - name: tmp-vol
             mountPath: /host/tmp
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
       # kspm-analyzer
       {{- end }}
       {{- if include "nodeAnalyzer.deployImageAnalyzer" . }}
@@ -250,6 +275,10 @@ spec:
             readOnly: true
           - mountPath: /var/lib/containers
             name: var-lib-containers-vol
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
           # Custom volume mount here
           {{- if .Values.nodeAnalyzer.imageAnalyzer.extraVolumes.mounts }}
 {{ toYaml .Values.nodeAnalyzer.imageAnalyzer.extraVolumes.mounts | indent 10 }}
@@ -354,6 +383,10 @@ spec:
               name: {{ .Release.Name }}-image-analyzer
               key: no_proxy
               optional: true
+        {{- if include "nodeAnalyzer.printCA" . }}
+        - name: SSL_CERT_FILE
+          value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+        {{- end }}
         {{- range $key, $value := .Values.nodeAnalyzer.imageAnalyzer.env }}
         - name: "{{ $key }}"
           value: "{{ $value }}"
@@ -376,6 +409,10 @@ spec:
           - mountPath: /host
             name: root-vol
             readOnly: true
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
         env:
         - name: ACCESS_KEY
           valueFrom:
@@ -453,6 +490,10 @@ spec:
               key: no_proxy
               name: {{ .Release.Name }}-host-analyzer
               optional: true
+        {{- if include "nodeAnalyzer.printCA" . }}
+        - name: SSL_CERT_FILE
+          value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+        {{- end }}
         {{- range $key, $value := .Values.nodeAnalyzer.hostAnalyzer.env }}
         - name: "{{ $key }}"
           value: "{{ $value }}"
@@ -478,6 +519,10 @@ spec:
             readOnly: true
           - mountPath: /host/tmp
             name: tmp-vol
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
         env:
         - name: ACCESS_KEY
           valueFrom:
@@ -527,6 +572,10 @@ spec:
               key: no_proxy
               name: {{ .Release.Name }}-benchmark-runner
               optional: true
+        {{- if include "nodeAnalyzer.printCA" . }}
+        - name: SSL_CERT_FILE
+          value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+        {{- end }}
         {{- range $key, $value := .Values.nodeAnalyzer.benchmarkRunner.env }}
         - name: "{{ $key }}"
           value: "{{ $value }}"
@@ -631,6 +680,10 @@ spec:
                 name: {{ .Release.Name }}-runtime-scanner
                 key: no_proxy
                 optional: true
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - name: SSL_CERT_FILE
+            value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+          {{- end }}
           {{- range $key, $value := .Values.nodeAnalyzer.runtimeScanner.env }}
           - name: "{{ $key }}"
             value: "{{ $value }}"
@@ -664,6 +717,10 @@ spec:
             name: var-lib-containers-vol
           - mountPath: /tmp
             name: tmp-vol
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
           {{- if .Values.nodeAnalyzer.runtimeScanner.extraMounts }}
 {{ toYaml .Values.nodeAnalyzer.runtimeScanner.extraMounts | indent 10 }}
           {{- end }}
@@ -782,6 +839,10 @@ spec:
             value: "/tmp"
           - name: PROBES_PORT
             value: {{ .Values.nodeAnalyzer.hostScanner.probesPort | quote }}
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - name: SSL_CERT_FILE
+            value: /ca-certs/{{ include "nodeAnalyzer.sslCaFileName" . }}
+          {{- end }}
           {{- range $key, $value := .Values.nodeAnalyzer.hostScanner.env }}
           - name: "{{ $key }}"
             value: "{{ $value }}"
@@ -792,6 +853,10 @@ spec:
           - mountPath: /host
             name: root-vol
             readOnly: true
+          {{- if include "nodeAnalyzer.printCA" . }}
+          - mountPath: /ca-certs
+            name: ca-cert
+          {{- end }}
           {{- if .Values.nodeAnalyzer.hostScanner.extraMounts }}
 {{ toYaml .Values.nodeAnalyzer.hostScanner.extraMounts | indent 10 }}
           {{- end }}
