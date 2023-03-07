@@ -563,20 +563,16 @@ Append Lets Encrypt Root CA to CA provided
 We use this function as a boolean helper as well as printing out the CA to determine what particular
 keys are enabled or disabled.
 
-We append the Sysdig CA as there are edge cases for on-premise customers that might not require the
+We append the Sysdig CA as there are edge cases that might not require the
 custom CA to get out to download the prebuilt agent probe but require the CA to verify the backend.
 */}}
 {{- define "agent.printCA" -}}
     {{- if or (include "agent.existingCaSecret" .) (include "agent.existingCaConfigMap" .) }}
       {{- printf "%s" "true" -}}
-    {{- else if and (eq .Values.global.sysdig.region "custom") (.Values.global.ssl.ca.cert) }}
-      {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
-    {{- else if and (eq .Values.global.sysdig.region "custom") (.Values.ssl.ca.cert) }}
-      {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else if .Values.ssl.ca.cert }}
-      {{- printf "%s" .Values.ssl.ca.cert -}}
+      {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else if .Values.global.ssl.ca.cert }}
-      {{- printf "%s" .Values.global.ssl.ca.cert -}}
+      {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else }}
       {{- default "" -}}
     {{- end }}

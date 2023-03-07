@@ -58,8 +58,6 @@ custom CA to get out to download the prebuilt agent probe but require the CA to 
       {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else if and (eq .Values.global.sysdig.region "custom") (.Values.ssl.ca.cert) }}
       {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
-    {{- else if .Values.ssl.ca.cert }}
-      {{- printf "%s" .Values.ssl.ca.cert -}}
     {{- else if .Values.global.ssl.ca.cert }}
       {{- printf "%s" .Values.global.ssl.ca.cert -}}
     {{- else }}
