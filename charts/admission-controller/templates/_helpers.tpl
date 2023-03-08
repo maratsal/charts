@@ -360,3 +360,130 @@ an error if not.
 true
 {{- end }}
 {{- end }}
+
+{{/*
+SSL CA Filename
+
+This is used to get the filename which is used when we create the volume inside the container
+*/}}
+{{- define "admissionController.sslCaFileName" -}}
+    {{- if include "admissionController.existingCaSecret" ( dict "root" .root "name" .name ) }}
+      {{- include "admissionController.existingCaSecretFileName" ( dict "root" .root "name" .name ) -}}
+    {{- else if include "admissionController.existingCaConfigMap" ( dict "root" .root "name" .name ) }}
+      {{- include "admissionController.existingCaConfigMapFileName" ( dict "root" .root "name" .name ) -}}
+    {{- else if .root.Values.global.ssl.ca.cert }}
+      {{- required "A valid fileName is required for global.ssl.ca.fileName" (.root.Values.global.ssl.ca.fileName) -}}
+    {{- end }}
+{{- end -}}
+
+
+{{/*
+Append Lets Encrypt Root CA to CA provided
+
+We use this function as a boolean helper as well as printing out the CA to determine what particular
+keys are enabled or disabled.
+
+We append the Sysdig CA as there are edge cases that might not require the
+custom CA to get out to download the prebuilt agent probe but require the CA to verify the backend.
+*/}}
+{{- define "admissionController.printCA" -}}
+    {{- if or (include "admissionController.existingCaSecret" (dict "root" .root "name" .name)) (include "admissionController.existingCaConfigMap" (dict "root" .root "name" .name)) }}
+      {{- printf "%s" "true" -}}
+    {{- else if .root.Values.global.ssl.ca.cert }}
+      {{- printf "%s%s" .root.Values.global.ssl.ca.cert (.root.Files.Get "sysdig_ca.toml") -}}
+    {{- else }}
+      {{- default "" -}}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing Secret name to be used for Custom CA
+*/}}
+{{- define "admissionController.existingCaSecret" -}}
+    {{- if and ( eq .name "webhook" ) ( .root.Values.webhook.ssl.ca.existingCaSecret ) }}
+      {{ fail "got inside existingCaSecret webhook" }}
+      {{- $secret := (lookup "v1" "Secret" .root.Release.Namespace .root.Values.webhook.ssl.ca.existingCaSecret ) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using .webhook.ssl.ca.existingCaSecret" .root.Values.webhook.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your .webhook.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- else if and ( eq .name "scanner" ) ( .root.Values.scanner.ssl.ca.existingCaSecret ) }}
+      {{- $secret := (lookup "v1" "Secret" .root.Release.Namespace .root.Values.scanner.ssl.ca.existingCaSecret ) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using admissionController.scanner.ssl.ca.existingCaSecret" .root.Values.scanner.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your admissionController.scanner.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- else if .root.Values.global.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .root.Release.Namespace .root.Values.global.ssl.ca.existingCaSecret) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using global.ssl.ca.existingCaSecret" .root.Values.global.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your global.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing Secret filename defined inside the Secret
+This is used when we specify the agent ca_certificate as well as the SSL_CERT_FILE environment variable
+*/}}
+{{- define "admissionController.existingCaSecretFileName" -}}
+    {{/*
+    Note: the last default function call is to avoid some weirdness when either
+    argument is nil. If .Values.global.sysdig.existingCaSecretFileName was undefined, the
+    returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
+    */}}
+    {{- if ( eq .name "webhook" ) }}
+      {{- required "A filename is required for admissionController.webhook.ssl.ca.existingCaSecretFileName" (.root.Values.webhook.ssl.ca.existingCaSecretFileName | default .root.Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
+    {{- else if ( eq .name "scanner" ) }}
+      {{- required "A filename is required for admissionController.scanner.ssl.ca.existingCaSecretFileName" (.root.Values.scanner.ssl.ca.existingCaSecretFileName | default .root.Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing ConfigMap name to be used for Custom CA
+*/}}
+{{- define "admissionController.existingCaConfigMap" -}}
+
+    {{- if and ( eq .name "webhook" ) ( .root.Values.webhook.ssl.ca.existingCaConfigMap ) }}
+      {{- $configMap := (lookup "v1" "ConfigMap" .root.Release.Namespace .root.Values.webhook.ssl.ca.existingCaConfigMap) }}
+      {{- if $configMap }}
+        {{- required "A valid configMap name must be provided when using webhook.ssl.ca.existingCaConfigMap" .root.Values.webhook.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your webhook.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- else if and ( eq .name "scanner" ) ( .root.Values.scanner.ssl.ca.existingCaConfigMap ) }}
+      {{- $configMap := (lookup "v1" "ConfigMap" .root.Release.Namespace .root.Values.scanner.ssl.ca.existingCaConfigMap) }}
+      {{- if $configMap }}
+        {{- required "A valid configMap name must be provided when using scanner.ssl.ca.existingCaConfigMap" .root.Values.scanner.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your scanner.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- else if .root.Values.global.ssl.ca.existingCaConfigMap }}
+      {{- $configMap := (lookup "v1" "ConfigMap" .root.Release.Namespace .root.Values.global.ssl.ca.existingCaConfigMap) }}
+      {{- if $configMap }}
+        {{- required "A valid configMap name must be provided when using global.ssl.ca.existingCaConfigMap" .root.Values.global.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your global.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing ConfigMap filename defined inside the ConfigMap
+This is used when we specify the agent ca_certificate as well as the SSL_CERT_FILE environment variable
+*/}}
+{{- define "admissionController.existingCaConfigMapFileName" -}}
+    {{/*
+    Note: the last default function call is to avoid some weirdness when either
+    argument is nil. If .Values.global.ssl.ca.existingCaConfigMapFileName was undefined, the
+    returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
+    */}}
+    {{- if ( eq .name "webhook" ) }}
+      {{- required "A filename is required for admissionController.webhook.ssl.ca.existingCaConfigMapFileName" (.root.Values.webhook.ssl.ca.existingCaConfigMapFileName | default .root.Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
+    {{- else if ( eq .name "scanner" ) }}
+      {{- required "A filename is required for admissionController.scanner.ssl.ca.existingCaConfigMapFileName" (.root.Values.scanner.ssl.ca.existingCaConfigMapFileName | default .root.Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
+    {{- end }}
+{{- end -}}

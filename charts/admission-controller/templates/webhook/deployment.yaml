@@ -82,6 +82,9 @@ spec:
             {{- if .Values.webhook.ssl.ca.cert }}
             - name: SSL_CERT_FILE
               value: /ca-cert/root_ca_file.crt # mounted from the secret
+            {{- else if include "admissionController.printCA" (dict "root" . "name" "webhook") }}
+            - name: SSL_CERT_FILE
+              value: /ca-certs/{{ include "admissionController.sslCaFileName" (dict "root" . "name" "webhook") }}
             {{- end }}
           ports:
             - name: http
@@ -116,6 +119,10 @@ spec:
             - name: ca-cert
               mountPath: /ca-cert
               readOnly: true
+            {{- else if include "admissionController.printCA" (dict "root" . "name" "webhook") }}
+            - mountPath: /ca-certs
+              name: ca-cert
+              readOnly: true
             {{- end }}
           resources:
             {{- toYaml .Values.webhook.resources | nindent 12 }}
@@ -127,6 +134,18 @@ spec:
         - name: ca-cert
           secret:
             secretName: {{ include "admissionController.webhook.fullname" . }}-ca
+      {{- else if include "admissionController.existingCaSecret" (dict "root" . "name" "webhook") }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "admissionController.existingCaSecret" (dict "root" . "name" "webhook") }}
+      {{- else if include "admissionController.existingCaConfigMap" (dict "root" . "name" "webhook") }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "admissionController.existingCaConfigMap" (dict "root" . "name" "webhook") }}
+      {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
       {{- end }}
     {{- with .Values.webhook.nodeSelector }}
       nodeSelector:

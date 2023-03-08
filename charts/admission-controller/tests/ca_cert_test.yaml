@@ -1,0 +1,55 @@
+suite: Test admission-controller CA cert
+templates:
+  - scanner/serviceaccount.yaml
+  - scanner/deployment.yaml
+  - scanner/podmonitor.yaml
+  - scanner/secret.yaml
+  - scanner/service.yaml
+  - scanner/configmap.yaml
+  - webhook/serviceaccount.yaml
+  - webhook/deployment.yaml
+  - webhook/configmap.yaml
+  - webhook/secret.yaml
+  - webhook/admissionregistration.yaml
+  - webhook/podmonitor.yaml
+tests:
+  - it: Check Global Webhook CA Cert
+    documentIndex: 0
+    set:
+      clusterName: "test-k8s"
+      scanner:
+        enabled: true
+      webhook:
+        enabled: true
+      global:
+        ssl:
+          ca:
+            cert: |
+              -----BEGIN CERTIFICATE-----
+              my-test-cert
+              -----END CERTIFICATE-----
+            fileName: "global_root_ca.crt"
+      sysdig:
+        accessKey: standard-key
+        secureAPIToken: standard-token
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SSL_CERT_FILE
+            value: "/ca-certs/global_root_ca.crt"
+        template: webhook/deployment.yaml
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ca-cert
+            secret:
+              secretName: RELEASE-NAME-global-ca
+        template: webhook/deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ca-cert
+            mountPath: /ca-certs
+            readOnly: true
+        template: webhook/deployment.yaml
