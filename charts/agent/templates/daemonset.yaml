@@ -115,8 +115,9 @@ spec:
           volumeMounts:
           {{- /* Always requested */}}
             {{- if include "agent.printCA" . }}
-            - mountPath: /ca-certs
+            - mountPath: /opt/draios/etc/ca-certs
               name: ca-cert
+              readOnly: true
             {{- end }}
 
           {{- /* Slim = true, Autopilot = false */}}
@@ -222,8 +223,9 @@ spec:
             - mountPath: /etc/podinfo
               name: podinfo
             {{- if include "agent.printCA" . }}
-            - mountPath: /ca-certs
+            - mountPath: /opt/draios/etc/ca-certs
               name: ca-cert
+              readOnly: true
             {{- end }}
 
           {{- /* Slim = false, Autopilot = false */}}

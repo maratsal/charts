@@ -49,6 +49,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
@@ -87,6 +88,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
@@ -130,6 +132,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
@@ -166,12 +169,14 @@ tests:
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
@@ -211,12 +216,14 @@ tests:
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: ca-cert
             mountPath: /opt/draios/etc/ca-certs
+            readOnly: true
         template: daemonset.yaml
       - matchRegex:
           path: data.dragent\.yaml
