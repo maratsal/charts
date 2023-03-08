@@ -300,8 +300,8 @@ This is used to get the filename which is used when we create the volume inside 
       {{- include "nodeAnalyzer.existingCaSecretFileName" . -}}
     {{- else if include "nodeAnalyzer.existingCaConfigMap" . }}
       {{- include "nodeAnalyzer.existingCaConfigMapFileName" . -}}
-    {{- else if .Values.ssl.ca.cert }}
-      {{- required "A valid fileName is required for nodeAnalyzer.ssl.ca.fileName" (.Values.ssl.ca.fileName) -}}
+    {{- else if .Values.nodeAnalyzer.ssl.ca.cert }}
+      {{- required "A valid fileName is required for nodeAnalyzer.ssl.ca.fileName" (.Values.nodeAnalyzer.ssl.ca.fileName) -}}
     {{- else if .Values.global.ssl.ca.cert }}
       {{- required "A valid fileName is required for global.ssl.ca.fileName" (.Values.global.ssl.ca.fileName) -}}
     {{- end }}
@@ -320,8 +320,8 @@ custom CA to get out to download the prebuilt agent probe but require the CA to 
 {{- define "nodeAnalyzer.printCA" -}}
     {{- if or (include "nodeAnalyzer.existingCaSecret" .) (include "nodeAnalyzer.existingCaConfigMap" .) }}
       {{- printf "%s" "true" -}}
-    {{- else if .Values.ssl.ca.cert }}
-      {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
+    {{- else if .Values.nodeAnalyzer.ssl.ca.cert }}
+      {{- printf "%s%s" .Values.nodeAnalyzer.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else if .Values.global.ssl.ca.cert }}
       {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
     {{- else }}
@@ -333,10 +333,10 @@ custom CA to get out to download the prebuilt agent probe but require the CA to 
 Template to determine the existing Secret name to be used for Custom CA
 */}}
 {{- define "nodeAnalyzer.existingCaSecret" -}}
-    {{- if .Values.ssl.ca.existingCaSecret }}
-      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.ssl.ca.existingCaSecret) }}
+    {{- if .Values.nodeAnalyzer.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.nodeAnalyzer.ssl.ca.existingCaSecret) }}
       {{- if $secret }}
-        {{- required "A valid secretName must be provided when using nodeAnalyzer.ssl.ca.existingCaSecret" .Values.ssl.ca.existingCaSecret -}}
+        {{- required "A valid secretName must be provided when using nodeAnalyzer.ssl.ca.existingCaSecret" .Values.nodeAnalyzer.ssl.ca.existingCaSecret -}}
       {{- else }}
           {{ fail "Your nodeAnalyzer.ssl.ca.existingCaSecret does not exist." }}
       {{- end }}
@@ -360,17 +360,17 @@ This is used when we specify the agent ca_certificate as well as the SSL_CERT_FI
     argument is nil. If .Values.global.sysdig.existingCaSecretFileName was undefined, the
     returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
     */}}
-    {{- required "A filename is required for ssl.ca.existingCaSecretFileName" (.Values.ssl.ca.existingCaSecretFileName | default .Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
+    {{- required "A filename is required for ssl.ca.existingCaSecretFileName" (.Values.nodeAnalyzer.ssl.ca.existingCaSecretFileName | default .Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
 {{- end -}}
 
 {{/*
 Template to determine the existing ConfigMap name to be used for Custom CA
 */}}
 {{- define "nodeAnalyzer.existingCaConfigMap" -}}
-    {{- if .Values.ssl.ca.existingCaConfigMap }}
-      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.ssl.ca.existingCaConfigMap) }}
+    {{- if .Values.nodeAnalyzer.ssl.ca.existingCaConfigMap }}
+      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.nodeAnalyzer.ssl.ca.existingCaConfigMap) }}
       {{- if $secret }}
-        {{- required "A valid configMap name must be provided when using nodeAnalyzer.ssl.ca.existingCaConfigMap" .Values.ssl.ca.existingCaConfigMap -}}
+        {{- required "A valid configMap name must be provided when using nodeAnalyzer.ssl.ca.existingCaConfigMap" .Values.nodeAnalyzer.ssl.ca.existingCaConfigMap -}}
       {{- else }}
           {{ fail "Your nodeAnalyzer.ssl.ca.existingCaConfigMap does not exist." }}
       {{- end }}
@@ -394,5 +394,5 @@ This is used when we specify the agent ca_certificate as well as the SSL_CERT_FI
     argument is nil. If .Values.global.ssl.ca.existingCaConfigMapFileName was undefined, the
     returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
     */}}
-    {{- required "A filename is required for ssl.ca.existingCaConfigMapFileName" (.Values.ssl.ca.existingCaConfigMapFileName | default .Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
+    {{- required "A filename is required for ssl.ca.existingCaConfigMapFileName" (.Values.nodeAnalyzer.ssl.ca.existingCaConfigMapFileName | default .Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
 {{- end -}}

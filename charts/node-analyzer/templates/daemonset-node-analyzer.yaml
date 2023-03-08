@@ -97,7 +97,7 @@ spec:
         - name: ca-cert
           configMap:
             name: {{ include "nodeAnalyzer.existingCaConfigMap" . }}
-        {{- else if .Values.ssl.ca.cert }}
+        {{- else if .Values.nodeAnalyzer.ssl.ca.cert }}
         - name: ca-cert
           secret:
             secretName: {{ template "nodeAnalyzer.fullname" . }}-ca

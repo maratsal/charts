@@ -117,12 +117,18 @@ spec:
             {{- if .Values.rapidResponse.ssl.ca.certs }}
             - name: SSL_CERT_DIR
               value: /ca-certs
+            {{- else if include "rapidResponse.printCA" . }}
+            - name: SSL_CERT_FILE
+              value: /ca-certs/{{ include "rapidResponse.sslCaFileName" . }}
             {{- end }}
           volumeMounts:
             {{- if .Values.rapidResponse.extraVolumes.mounts }}
 {{ toYaml .Values.rapidResponse.extraVolumes.mounts | indent 12 }}
             {{- end }}
             {{- if .Values.rapidResponse.ssl.ca.certs }}
+            - mountPath: /ca-certs
+              name: ca-cert
+            {{- else if include "rapidResponse.printCA" . }}
             - mountPath: /ca-certs
               name: ca-cert
             {{- end }}
@@ -134,6 +140,18 @@ spec:
         - name: ca-cert
           secret:
             secretName: {{ template "rapidResponse.fullname" . }}-additionalca
+        {{- else if include "rapidResponse.existingCaSecret" . }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "rapidResponse.existingCaSecret" . }}
+        {{- else if include "rapidResponse.existingCaConfigMap" . }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "rapidResponse.existingCaConfigMap" . }}
+        {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
         {{- end }}
   updateStrategy:
     type: {{ .Values.rapidResponse.updateStrategy.type }}

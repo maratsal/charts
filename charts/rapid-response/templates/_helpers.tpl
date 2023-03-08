@@ -219,3 +219,106 @@ Create the name of the Rapid Response collector specific service account to use
 true
 {{- end }}
 {{- end }}
+
+{{/*
+SSL CA Filename
+
+This is used to get the filename which is used when we create the volume inside the container
+*/}}
+{{- define "rapidResponse.sslCaFileName" -}}
+    {{- if include "rapidResponse.existingCaSecret" . }}
+      {{- include "rapidResponse.existingCaSecretFileName" . -}}
+    {{- else if include "rapidResponse.existingCaConfigMap" . }}
+      {{- include "rapidResponse.existingCaConfigMapFileName" . -}}
+    {{- else if .Values.global.ssl.ca.cert }}
+      {{- required "A valid fileName is required for global.ssl.ca.fileName" (.Values.global.ssl.ca.fileName) -}}
+    {{- end }}
+{{- end -}}
+
+
+{{/*
+Append Lets Encrypt Root CA to CA provided
+
+We use this function as a boolean helper as well as printing out the CA to determine what particular
+keys are enabled or disabled.
+
+We append the Sysdig CA as there are edge cases that might not require the
+custom CA to get out to download the prebuilt agent probe but require the CA to verify the backend.
+*/}}
+{{- define "rapidResponse.printCA" -}}
+    {{- if or (include "rapidResponse.existingCaSecret" .) (include "rapidResponse.existingCaConfigMap" .) }}
+      {{- printf "%s" "true" -}}
+    {{- else if .Values.global.ssl.ca.cert }}
+      {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
+    {{- else }}
+      {{- default "" -}}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing Secret name to be used for Custom CA
+*/}}
+{{- define "rapidResponse.existingCaSecret" -}}
+    {{- if .Values.rapidResponse.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.rapidResponse.ssl.ca.existingCaSecret) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using rapidResponse.ssl.ca.existingCaSecret" .Values.rapidResponse.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your rapidResponse.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- else if .Values.global.ssl.ca.existingCaSecret }}
+      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.global.ssl.ca.existingCaSecret) }}
+      {{- if $secret }}
+        {{- required "A valid secretName must be provided when using global.ssl.ca.existingCaSecret" .Values.global.ssl.ca.existingCaSecret -}}
+      {{- else }}
+          {{ fail "Your global.ssl.ca.existingCaSecret does not exist." }}
+      {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing Secret filename defined inside the Secret
+This is used when we specify the agent ca_certificate as well as the SSL_CERT_FILE environment variable
+*/}}
+{{- define "rapidResponse.existingCaSecretFileName" -}}
+    {{/*
+    Note: the last default function call is to avoid some weirdness when either
+    argument is nil. If .Values.global.sysdig.existingCaSecretFileName was undefined, the
+    returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
+    */}}
+    {{- required "A filename is required for rapidResponse.ssl.ca.existingCaSecretFileName" (.Values.rapidResponse.ssl.ca.existingCaSecretFileName | default .Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
+{{- end -}}
+
+{{/*
+Template to determine the existing ConfigMap name to be used for Custom CA
+*/}}
+{{- define "rapidResponse.existingCaConfigMap" -}}
+    {{- if .Values.rapidResponse.ssl.ca.existingCaConfigMap }}
+      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.rapidResponse.ssl.ca.existingCaConfigMap) }}
+      {{- if $secret }}
+        {{- required "A valid configMap name must be provided when using rapidResponse.ssl.ca.existingCaConfigMap" .Values.rapidResponse.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your rapidResponse.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- else if .Values.global.ssl.ca.existingCaConfigMap }}
+      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.global.ssl.ca.existingCaConfigMap) }}
+      {{- if $secret }}
+        {{- required "A valid configMap name must be provided when using global.ssl.ca.existingCaConfigMap" .Values.global.ssl.ca.existingCaConfigMap -}}
+      {{- else }}
+          {{ fail "Your global.ssl.ca.existingCaConfigMap does not exist." }}
+      {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Template to determine the existing ConfigMap filename defined inside the ConfigMap
+This is used when we specify the agent ca_certificate as well as the SSL_CERT_FILE environment variable
+*/}}
+{{- define "rapidResponse.existingCaConfigMapFileName" -}}
+    {{/*
+    Note: the last default function call is to avoid some weirdness when either
+    argument is nil. If .Values.global.ssl.ca.existingCaConfigMapFileName was undefined, the
+    returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
+    */}}
+    {{- required "A filename is required for rapidResponse.ssl.ca.existingCaConfigMapFileName" (.Values.rapidResponse.ssl.ca.existingCaConfigMapFileName | default .Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
+{{- end -}}

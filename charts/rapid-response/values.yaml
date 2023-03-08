@@ -3,6 +3,23 @@ global:
   sysdig:
     region: "us1"
   proxy: {}
+  ssl:
+    ca:
+      # For outbound connections (secure backend, proxy,...)
+      # A PEM-encoded x509 certificate authority.
+      cert: ""
+
+      # Filename that is used when creating the secret.  Required if cert is provided.
+      fileName: ""
+
+      # Provide the name of an existing Secret that contains the CA required
+      existingCaSecret: ""
+      # Provide the filename that is defined inside the existing Secret
+      existingCaSecretFileName: ""
+      # Provide the name of an existing ConfigMap that contains the CA required
+      existingCaConfigMap: ""
+      # Provide the filename that is defined inside the existing ConfigMap
+      existingCaConfigMapFileName: ""
 
 sysdig:
   # Required: You need your Sysdig access key before running agents, either specifying 'accessKey' here, or using 'existingAccessKeySecret'
@@ -114,6 +131,15 @@ rapidResponse:
         #     FdNM4fBjDhoRhwIrurHDGabsIJa+0yThwRQSSafereqredfafLOHqV/ar6S63BGe
         #     MMNlTAQ9fvdNOTzZntye0ZZZR5SG13E=
         #     -----END CERTIFICATE-----
+
+      # Provide the name of an existing Secret that contains the CA required
+      existingCaSecret: ""
+      # Provide the filename that is defined inside the existing Secret
+      existingCaSecretFileName: ""
+      # Provide the name of an existing ConfigMap that contains the CA required
+      existingCaConfigMap: ""
+      # Provide the filename that is defined inside the existing ConfigMap
+      existingCaConfigMapFileName: ""
 
   # The privileged flag is necessary for OCP 4.x and other Kubernetes setups that deny host filesystem access to
   # running containers by default regardless of volume mounts. In those cases, access to the CRI socket would fail.
