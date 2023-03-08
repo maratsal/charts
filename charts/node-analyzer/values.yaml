@@ -14,7 +14,7 @@ global:
     ca:
       # For outbound connections (secure backend, proxy,...)
       # A PEM-encoded x509 certificate authority.
-      cert: ""
+      cert: |
 
       # Filename that is used when creating the secret.  Required if cert is provided.
       fileName: ""
