@@ -165,6 +165,7 @@ spec:
           {{- if include "kspmCollector.printCA" . }}
           - mountPath: /ca-certs
             name: ca-cert
+            readOnly: true
           {{- end }}
       volumes:
         {{- if include "kspmCollector.existingCaSecret" . }}

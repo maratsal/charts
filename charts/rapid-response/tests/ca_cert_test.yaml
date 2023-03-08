@@ -54,6 +54,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset.yaml
   - it: Check Global CA Cert with local CA cert override
     set:
@@ -96,6 +97,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset.yaml
   - it: Check Global CA Cert
     set:
@@ -131,4 +133,5 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset.yaml

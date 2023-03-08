@@ -65,6 +65,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset-node-analyzer.yaml
   - it: Check Global CA Cert New Engine Only
     set:
@@ -106,6 +107,7 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset-node-analyzer.yaml
   - it: Check Global CA Cert Old Engine
     set:
@@ -147,4 +149,5 @@ tests:
           content:
             name: ca-cert
             mountPath: /ca-certs
+            readOnly: true
         template: daemonset-node-analyzer.yaml
