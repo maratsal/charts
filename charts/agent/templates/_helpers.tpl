@@ -550,9 +550,9 @@ This is used to get the filename which is used when we create the volume inside 
     {{- else if include "agent.existingCaConfigMap" . }}
       {{- include "agent.existingCaConfigMapFileName" . -}}
     {{- else if .Values.ssl.ca.cert }}
-      {{- required "A valid fileName is required for agent.ssl.ca.fileName" (.Values.ssl.ca.fileName) -}}
+      {{- required "A valid fileName is required for agent.ssl.ca.fileName" ( .Values.ssl.ca.fileName ) -}}
     {{- else if .Values.global.ssl.ca.cert }}
-      {{- required "A valid fileName is required for global.ssl.ca.fileName" (.Values.global.ssl.ca.fileName) -}}
+      {{- required "A valid fileName is required for global.ssl.ca.fileName" ( .Values.global.ssl.ca.fileName ) -}}
     {{- end }}
 {{- end -}}
 
@@ -567,12 +567,12 @@ We append the Sysdig CA as there are edge cases that might not require the
 custom CA to get out to download the prebuilt agent probe but require the CA to verify the backend.
 */}}
 {{- define "agent.printCA" -}}
-    {{- if or (include "agent.existingCaSecret" .) (include "agent.existingCaConfigMap" .) }}
+    {{- if or ( include "agent.existingCaSecret" . ) ( include "agent.existingCaConfigMap" . ) }}
       {{- printf "%s" "true" -}}
     {{- else if .Values.ssl.ca.cert }}
-      {{- printf "%s%s" .Values.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
+      {{- printf "%s%s" .Values.ssl.ca.cert ( .Files.Get "sysdig_ca.toml" ) -}}
     {{- else if .Values.global.ssl.ca.cert }}
-      {{- printf "%s%s" .Values.global.ssl.ca.cert (.Files.Get "sysdig_ca.toml") -}}
+      {{- printf "%s%s" .Values.global.ssl.ca.cert ( .Files.Get "sysdig_ca.toml" ) -}}
     {{- else }}
       {{- default "" -}}
     {{- end }}
@@ -583,14 +583,14 @@ Template to determine the existing Secret name to be used for Custom CA
 */}}
 {{- define "agent.existingCaSecret" -}}
     {{- if .Values.ssl.ca.existingCaSecret }}
-      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.ssl.ca.existingCaSecret) }}
+      {{- $secret := ( lookup "v1" "Secret" .Release.Namespace .Values.ssl.ca.existingCaSecret ) }}
       {{- if $secret }}
         {{- required "A valid secretName must be provided when using agent.ssl.ca.existingCaSecret" .Values.ssl.ca.existingCaSecret -}}
       {{- else }}
           {{ fail "Your agent.ssl.ca.existingCaSecret does not exist." }}
       {{- end }}
     {{- else if .Values.global.ssl.ca.existingCaSecret }}
-      {{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.global.ssl.ca.existingCaSecret) }}
+      {{- $secret := ( lookup "v1" "Secret" .Release.Namespace .Values.global.ssl.ca.existingCaSecret ) }}
       {{- if $secret }}
         {{- required "A valid secretName must be provided when using global.ssl.ca.existingCaSecret" .Values.global.ssl.ca.existingCaSecret -}}
       {{- else }}
@@ -609,7 +609,7 @@ This is used when we specify the agent ca_certificate as well as the SSL_CERT_FI
     argument is nil. If .Values.global.sysdig.existingCaSecretFileName was undefined, the
     returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
     */}}
-    {{- required "A filename is required for ssl.ca.existingCaSecretFileName" (.Values.ssl.ca.existingCaSecretFileName | default .Values.global.ssl.ca.existingCaSecretFileName | default "") -}}
+    {{- required "A filename is required for ssl.ca.existingCaSecretFileName" ( .Values.ssl.ca.existingCaSecretFileName | default .Values.global.ssl.ca.existingCaSecretFileName | default "" ) -}}
 {{- end -}}
 
 {{/*
@@ -617,15 +617,15 @@ Template to determine the existing ConfigMap name to be used for Custom CA
 */}}
 {{- define "agent.existingCaConfigMap" -}}
     {{- if .Values.ssl.ca.existingCaConfigMap }}
-      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.ssl.ca.existingCaConfigMap) }}
-      {{- if $secret }}
+      {{- $configMap := ( lookup "v1" "ConfigMap" .Release.Namespace .Values.ssl.ca.existingCaConfigMap ) }}
+      {{- if $configMap }}
         {{- required "A valid configMap name must be provided when using agent.ssl.ca.existingCaConfigMap" .Values.ssl.ca.existingCaConfigMap -}}
       {{- else }}
           {{ fail "Your agent.ssl.ca.existingCaConfigMap does not exist." }}
       {{- end }}
     {{- else if .Values.global.ssl.ca.existingCaConfigMap }}
-      {{- $secret := (lookup "v1" "ConfigMap" .Release.Namespace .Values.global.ssl.ca.existingCaConfigMap) }}
-      {{- if $secret }}
+      {{- $configMap := ( lookup "v1" "ConfigMap" .Release.Namespace .Values.global.ssl.ca.existingCaConfigMap ) }}
+      {{- if $configMap }}
         {{- required "A valid configMap name must be provided when using global.ssl.ca.existingCaConfigMap" .Values.global.ssl.ca.existingCaConfigMap -}}
       {{- else }}
           {{ fail "Your global.ssl.ca.existingCaConfigMap does not exist." }}
@@ -643,5 +643,5 @@ This is used when we specify the agent ca_certificate as well as the SSL_CERT_FI
     argument is nil. If .Values.global.ssl.ca.existingCaConfigMapFileName was undefined, the
     returned empty string does not evaluate to empty on Helm Version:"v3.8.0"
     */}}
-    {{- required "A filename is required for ssl.ca.existingCaConfigMapFileName" (.Values.ssl.ca.existingCaConfigMapFileName | default .Values.global.ssl.ca.existingCaConfigMapFileName | default "") -}}
+    {{- required "A filename is required for ssl.ca.existingCaConfigMapFileName" ( .Values.ssl.ca.existingCaConfigMapFileName | default .Values.global.ssl.ca.existingCaConfigMapFileName | default "" ) -}}
 {{- end -}}

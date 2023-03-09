@@ -199,7 +199,7 @@ spec:
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- if and (.Values.slim.enabled) (include "agent.printCA" .) }}
+            {{- if and ( .Values.slim.enabled ) ( include "agent.printCA" . ) }}
             - name: SSL_CERT_FILE
               value: /opt/draios/etc/ca-certs/{{ include "agent.sslCaFileName" . }}
             {{- end }}
