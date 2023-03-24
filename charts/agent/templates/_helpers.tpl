@@ -481,6 +481,9 @@ ssl: {{ $ssl }}
 {{- if $sslVerifyCertificate }}
 ssl_verify_certificate: {{ $sslVerifyCertificate }}
 {{- end }}
+{{- if include "agent.printCA" . }}
+    ca_certificate: /ca-certs/{{ include "agent.sslCaFileName" . }}
+{{- end }}
 {{- end }}
 
 {{/*
