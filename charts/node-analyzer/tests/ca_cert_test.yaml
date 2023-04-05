@@ -120,11 +120,11 @@ tests:
     set:
       documentIndex: 0
       nodeAnalyzer:
-        enchmarkRunner: { deploy: true } 
-        imageAnalyzer: { deploy: true } 
-        hostAnalyzer: { deploy: true } 
-        hostScanner: { deploy: false } 
-        runtimeScanner: { deploy: false } 
+        enchmarkRunner: { deploy: true }
+        imageAnalyzer: { deploy: true }
+        hostAnalyzer: { deploy: true }
+        hostScanner: { deploy: false }
+        runtimeScanner: { deploy: false }
       secure:
         vulnerabilityManagement:
           newEngineOnly: false
