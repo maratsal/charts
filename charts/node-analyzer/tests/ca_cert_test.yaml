@@ -7,15 +7,17 @@ tests:
     set:
       clusterName: "test"
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: false
-      nodeAnalyzer.imageAnalyzer.deploy: false
-      nodeAnalyzer.hostAnalyzer.deploy: false
-      nodeAnalyzer.hostScanner.deploy: false
-      nodeAnalyzer.runtimeScanner.deploy: true
-      secure.vulnerabilityManagement.newEngineOnly: true
+      secure:
+        vulnerabilityManagement:
+          newEngineOnly: true
       sysdig:
         accessKey: AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE
       nodeAnalyzer:
+        benchmarkRunner: { deploy: false }
+        imageAnalyzer: { deploy: false }
+        hostAnalyzer: { deploy: false }
+        hostScanner: { deploy: false }
+        runtimeScanner: { deploy: true }
         ssl:
           ca:
             cert: |
@@ -30,15 +32,17 @@ tests:
   - it: Check Local CA Cert
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
-      secure.vulnerabilityManagement.newEngineOnly: true
+      secure:
+        vulnerabilityManagement:
+          newEngineOnly: true
       sysdig:
         accessKey: AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE
       nodeAnalyzer:
+        benchmarkRunner: { deploy: false }
+        imageAnalyzer: { deploy: true }
+        hostAnalyzer: { deploy: true }
+        hostScanner: { deploy: true }
+        runtimeScanner: { deploy: true }
         ssl:
           ca:
             cert: |
@@ -70,12 +74,15 @@ tests:
   - it: Check Global CA Cert New Engine Only
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: false
-      nodeAnalyzer.imageAnalyzer.deploy: false
-      nodeAnalyzer.hostAnalyzer.deploy: false
-      nodeAnalyzer.hostScanner.deploy: true
-      nodeAnalyzer.runtimeScanner.deploy: true
-      secure.vulnerabilityManagement.newEngineOnly: true
+      nodeAnalyzer:
+        benchmarkRunner: { deploy: false }
+        imageAnalyzer: { deploy: false }
+        hostAnalyzer: { deploy: false }
+        hostScanner: { deploy: true }
+        runtimeScanner: { deploy: true }
+      secure:
+        vulnerabilityManagement:
+          newEngineOnly: true
       global:
         kspm:
           deploy: false
@@ -112,12 +119,15 @@ tests:
   - it: Check Global CA Cert Old Engine
     set:
       documentIndex: 0
-      nodeAnalyzer.benchmarkRunner.deploy: true
-      nodeAnalyzer.imageAnalyzer.deploy: true
-      nodeAnalyzer.hostAnalyzer.deploy: true
-      nodeAnalyzer.hostScanner.deploy: false
-      nodeAnalyzer.runtimeScanner.deploy: false
-      secure.vulnerabilityManagement.newEngineOnly: false
+      nodeAnalyzer:
+        enchmarkRunner: { deploy: true } 
+        imageAnalyzer: { deploy: true } 
+        hostAnalyzer: { deploy: true } 
+        hostScanner: { deploy: false } 
+        runtimeScanner: { deploy: false } 
+      secure:
+        vulnerabilityManagement:
+          newEngineOnly: false
       global:
         kspm:
           deploy: false
