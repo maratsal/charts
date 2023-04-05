@@ -52,7 +52,7 @@ tests:
             readOnly: true
         template: daemonset.yaml
       - matchRegex:
-          path: data.dragent\.yaml
+          path: data['dragent.yaml']
           pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
   - it: Check Local CA Cert with SSL Proxy
@@ -91,7 +91,7 @@ tests:
             readOnly: true
         template: daemonset.yaml
       - matchRegex:
-          path: data.dragent\.yaml
+          path: data['dragent.yaml']
           pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
   - it: Check Global CA Cert with local CA cert override
@@ -135,7 +135,7 @@ tests:
             readOnly: true
         template: daemonset.yaml
       - matchRegex:
-          path: data.dragent\.yaml
+          path: data['dragent.yaml']
           pattern: .*\/ca-certs\/root_ca\.crt.*
         template: configmap.yaml
   - it: Check Global CA Cert
@@ -179,7 +179,7 @@ tests:
             readOnly: true
         template: daemonset.yaml
       - matchRegex:
-          path: data.dragent\.yaml
+          path: data['dragent.yaml']
           pattern: .*\/ca-certs\/global_root_ca\.crt.*
         template: configmap.yaml
   - it: Check Global CA Cert with SSL Proxy
@@ -226,6 +226,6 @@ tests:
             readOnly: true
         template: daemonset.yaml
       - matchRegex:
-          path: data.dragent\.yaml
+          path: data['dragent.yaml']
           pattern: .*\/ca-certs\/global_root_ca\.crt.*
         template: configmap.yaml
