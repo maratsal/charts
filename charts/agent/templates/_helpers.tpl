@@ -482,7 +482,7 @@ ssl: {{ $ssl }}
 ssl_verify_certificate: {{ $sslVerifyCertificate }}
 {{- end }}
 {{- if include "agent.printCA" . }}
-    ca_certificate: /ca-certs/{{ include "agent.sslCaFileName" . }}
+ca_certificate: /etc/ca-certs/{{ include "agent.sslCaFileName" . }}
 {{- end }}
 {{- end }}
 
