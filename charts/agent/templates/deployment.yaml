@@ -95,6 +95,10 @@ spec:
           - name: no_proxy
             value: {{ .Values.proxy.noProxy | default .Values.global.proxy.noProxy }}
           {{- end }}
+          {{- if include "agent.printCA" . }}
+          - name: SSL_CERT_FILE
+            value: /opt/draios/etc/ca-certs/{{ include "agent.sslCaFileName" . }}
+          {{- end }}
           readinessProbe:
             exec:
               command: [ "test", "-e", "/opt/draios/logs/running" ]
@@ -116,6 +120,11 @@ spec:
               name: sysdig-agent-secrets
             - mountPath: /etc/podinfo
               name: podinfo
+            {{- if include "agent.printCA" . }}
+            - mountPath: /opt/draios/etc/ca-certs
+              name: ca-cert
+              readOnly: true
+            {{- end }}
 
           {{- /* Slim = false, Autopilot = false */}}
           {{- if and (not .Values.slim.enabled) (not (include "agent.gke.autopilot" .)) }}
@@ -245,6 +254,23 @@ spec:
                 apiVersion: v1
                 fieldPath: metadata.name
               path: name
+        {{- if include "agent.existingCaSecret" . }}
+        - name: ca-cert
+          secret:
+            secretName: {{ include "agent.existingCaSecret" . }}
+        {{- else if include "agent.existingCaConfigMap" . }}
+        - name: ca-cert
+          configMap:
+            name: {{ include "agent.existingCaConfigMap" . }}
+        {{- else if .Values.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ template "agent.fullname" . }}-ca
+        {{- else if .Values.global.ssl.ca.cert }}
+        - name: ca-cert
+          secret:
+            secretName: {{ .Release.Name }}-global-ca
+        {{- end }}
 
       {{- /* Slim = false, Autopilot = false */}}
       {{- if and (not .Values.slim.enabled) (not (include "agent.gke.autopilot" .)) }}
